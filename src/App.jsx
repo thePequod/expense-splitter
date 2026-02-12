@@ -1,9 +1,24 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export default function App() {
+export default function App() { 
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [expenses, setExpenses] = useState([]);
+  
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("expenses_v1");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) setExpenses(parsed);
+    } catch {
+      // ignore bad storage
+    }
+  }, []);
+
+  useEffect(() => {
+  localStorage.setItem("expenses_v1", JSON.stringify(expenses));
+}, [expenses]);
 
   const canAdd = useMemo(() => {
     const n = name.trim();
